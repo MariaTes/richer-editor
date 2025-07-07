@@ -43,10 +43,17 @@ const defaultOptions = {
     }],
 }
 
-compile({
-    ...defaultOptions,
-    entryPoints: ['./resources/js/index.js'],
-    outfile: './resources/dist/richer-editor.js',
-}).then(() => {
-    console.log(`Build completed for richer-editor.js`)
+const extensions = [
+    'code-block-lowlight',
+    'embed',
+]
+
+extensions.forEach((extension) => {
+    compile({
+        ...defaultOptions,
+        entryPoints: [`./resources/js/${extension}.js`],
+        outfile: `./resources/dist/${extension}.js`,
+    }).then(() => {
+        console.log(`Build completed for ${extension}.js`)
+    })
 })

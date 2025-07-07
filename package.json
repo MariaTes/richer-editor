@@ -6,7 +6,12 @@
         "build": "node bin/build.js"
     },
     "devDependencies": {
+        "@tiptap/core": "^3.0.0-beta.21",
+        "@tiptap/extension-code-block-lowlight": "^3.0.0-beta.21",
+        "@tiptap/pm": "^3.0.0-beta.21",
+        "crypto": "^1.0.1",
         "esbuild": "^0.25.5",
+        "lowlight": "^3.3.0",
         "prettier": "^3.5.3"
     }
 }

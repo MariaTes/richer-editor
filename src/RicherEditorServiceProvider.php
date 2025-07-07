@@ -2,16 +2,11 @@
 
 namespace Awcodes\RicherEditor;
 
-use Awcodes\RicherEditor\Commands\RicherEditorCommand;
-use Awcodes\RicherEditor\Testing\TestsRicherEditor;
-use Filament\Support\Assets\AlpineComponent;
+use Awcodes\RicherEditor\Support\RichContentRendererMixin;
+use Filament\Forms\Components\RichEditor\RichContentRenderer;
 use Filament\Support\Assets\Asset;
-use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
-use Filament\Support\Facades\FilamentIcon;
-use Illuminate\Filesystem\Filesystem;
-use Livewire\Features\SupportTesting\Testable;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -25,7 +20,6 @@ class RicherEditorServiceProvider extends PackageServiceProvider
     public function configurePackage(Package $package): void
     {
         $package->name(static::$name)
-            ->hasCommands($this->getCommands())
             ->hasInstallCommand(function (InstallCommand $command): void {
                 $command
                     ->publishConfigFile()
@@ -40,10 +34,6 @@ class RicherEditorServiceProvider extends PackageServiceProvider
             $package->hasConfigFile();
         }
 
-        if (file_exists($package->basePath('/../database/migrations'))) {
-            $package->hasMigrations($this->getMigrations());
-        }
-
         if (file_exists($package->basePath('/../resources/lang'))) {
             $package->hasTranslations();
         }
@@ -53,11 +43,13 @@ class RicherEditorServiceProvider extends PackageServiceProvider
         }
     }
 
-    public function packageRegistered(): void {}
+    public function packageRegistered(): void
+    {
+        //
+    }
 
     public function packageBooted(): void
     {
-        // Asset Registration
         FilamentAsset::register(
             $this->getAssets(),
             $this->getAssetPackageName()
@@ -68,20 +60,7 @@ class RicherEditorServiceProvider extends PackageServiceProvider
             $this->getAssetPackageName()
         );
 
-        // Icon Registration
-        FilamentIcon::register($this->getIcons());
-
-        // Handle Stubs
-        if (app()->runningInConsole()) {
-            foreach (app(Filesystem::class)->files(__DIR__ . '/../stubs/') as $file) {
-                $this->publishes([
-                    $file->getRealPath() => base_path("stubs/richer-editor/{$file->getFilename()}"),
-                ], 'richer-editor-stubs');
-            }
-        }
-
-        // Testing
-        Testable::mixin(new TestsRicherEditor);
+        RichContentRenderer::mixin(new RichContentRendererMixin);
     }
 
     protected function getAssetPackageName(): ?string
@@ -89,59 +68,39 @@ class RicherEditorServiceProvider extends PackageServiceProvider
         return 'awcodes/richer-editor';
     }
 
-    /**
-     * @return array<Asset>
-     */
+    /** @return array<Asset> */
     protected function getAssets(): array
     {
         return [
-            // AlpineComponent::make('richer-editor', __DIR__ . '/../resources/dist/components/richer-editor.js'),
             // Css::make('richer-editor-styles', __DIR__ . '/../resources/dist/richer-editor.css'),
-            // Js::make('richer-editor-scripts', __DIR__ . '/../resources/dist/richer-editor.js'),
+            Js::make(
+                id: 'rich-content-plugins/code-block-lowlight',
+                path: __DIR__ . '/../resources/dist/code-block-lowlight.js'
+            )->loadedOnRequest(),
+            Js::make(
+                id: 'rich-content-plugins/embed',
+                path: __DIR__ . '/../resources/dist/embed.js'
+            )->loadedOnRequest(),
         ];
     }
 
-    /**
-     * @return array<class-string>
-     */
+    /** @return array<class-string> */
     protected function getCommands(): array
     {
         return [
-            RicherEditorCommand::class,
+            //
         ];
     }
 
-    /**
-     * @return array<string>
-     */
-    protected function getIcons(): array
-    {
-        return [];
-    }
-
-    /**
-     * @return array<string>
-     */
+    /** @return array<string> */
     protected function getRoutes(): array
     {
         return [];
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     protected function getScriptData(): array
     {
         return [];
-    }
-
-    /**
-     * @return array<string>
-     */
-    protected function getMigrations(): array
-    {
-        return [
-            'create_richer-editor_table',
-        ];
     }
 }

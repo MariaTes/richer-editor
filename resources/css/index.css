@@ -1,1 +1,5 @@
-@import '../../vendor/filament/filament/resources/css/theme.css';
+.tiptap {
+    .embed.ProseMirror-selectednode {
+        @apply outline-2 outline-offset-2 outline-dashed outline-gray-950/20 dark:outline-white/20;
+    }
+}
