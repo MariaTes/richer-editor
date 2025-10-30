@@ -1,5 +1,7 @@
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-import lowlight from "./lowlight.js"
+import { common, createLowlight } from 'lowlight'
+
+const lowlight = createLowlight(common)
 
 export default CodeBlockLowlight
     .configure({

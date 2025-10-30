@@ -3,3 +3,57 @@
         @apply outline-2 outline-offset-2 outline-dashed outline-gray-950/20 dark:outline-white/20;
     }
 }
+
+.fi-fo-rich-editor {
+    .exit-fullscreen {
+        @apply hidden;
+    }
+
+    .fullscreen {
+        @apply fixed inset-0 z-40 bg-white dark:bg-gray-900 flex flex-col;
+
+        .enter-fullscreen {
+            @apply hidden;
+        }
+
+        .exit-fullscreen {
+            @apply block;
+        }
+
+        .fi-fo-rich-editor-main {
+            @apply overflow-hidden flex-1;
+
+            .fi-fo-rich-editor-content {
+                @apply overflow-y-auto;
+
+                .tiptap {
+                    @apply h-auto min-h-full;
+                }
+            }
+        }
+    }
+
+    &.has-max-height {
+        @apply flex flex-col;
+
+        .fi-input-wrp-content-ctn {
+            @apply h-full;
+
+            > div {
+                @apply h-full flex flex-col;
+
+                .fi-fo-rich-editor-main {
+                    @apply overflow-hidden flex-1;
+
+                    .fi-fo-rich-editor-content {
+                        @apply overflow-y-auto;
+
+                        .tiptap {
+                            @apply h-auto min-h-full;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

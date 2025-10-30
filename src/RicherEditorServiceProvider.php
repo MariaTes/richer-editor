@@ -2,7 +2,9 @@
 
 namespace Awcodes\RicherEditor;
 
+use Awcodes\RicherEditor\Extensions\Link;
 use Awcodes\RicherEditor\Support\RichContentRendererMixin;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\RichEditor\RichContentRenderer;
 use Filament\Support\Assets\Asset;
 use Filament\Support\Assets\Js;
@@ -45,7 +47,19 @@ class RicherEditorServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
-        //
+        $this->app->bind(
+            \Tiptap\Marks\Link::class,
+            Link::class,
+        );
+
+        RichEditor::macro('maxHeight', function (int | string | null $value = '400px'): static {
+            $this->extraAttributes([
+                'style' => "max-height: {$value};",
+                'class' => 'has-max-height',
+            ]);
+
+            return $this;
+        });
     }
 
     public function packageBooted(): void
@@ -72,7 +86,6 @@ class RicherEditorServiceProvider extends PackageServiceProvider
     protected function getAssets(): array
     {
         return [
-            // Css::make('richer-editor-styles', __DIR__ . '/../resources/dist/richer-editor.css'),
             Js::make(
                 id: 'rich-content-plugins/code-block-lowlight',
                 path: __DIR__ . '/../resources/dist/code-block-lowlight.js'
@@ -80,6 +93,26 @@ class RicherEditorServiceProvider extends PackageServiceProvider
             Js::make(
                 id: 'rich-content-plugins/embed',
                 path: __DIR__ . '/../resources/dist/embed.js'
+            )->loadedOnRequest(),
+            Js::make(
+                id: 'rich-content-plugins/id',
+                path: __DIR__ . '/../resources/dist/id.js'
+            )->loadedOnRequest(),
+            Js::make(
+                id: 'rich-content-plugins/video',
+                path: __DIR__ . '/../resources/dist/video.js'
+            )->loadedOnRequest(),
+            Js::make(
+                id: 'rich-content-plugins/fullscreen',
+                path: __DIR__ . '/../resources/dist/fullscreen.js'
+            )->loadedOnRequest(),
+            Js::make(
+                id: 'rich-content-plugins/link',
+                path: __DIR__ . '/../resources/dist/link.js'
+            )->loadedOnRequest(),
+            Js::make(
+                id: 'rich-content-plugins/figure',
+                path: __DIR__ . '/../resources/dist/figure.js'
             )->loadedOnRequest(),
         ];
     }

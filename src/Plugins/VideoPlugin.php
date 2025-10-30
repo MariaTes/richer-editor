@@ -2,9 +2,7 @@
 
 namespace Awcodes\RicherEditor\Plugins;
 
-use Awcodes\RicherEditor\Extensions\Embed;
-use Carbon\Carbon;
-use Carbon\CarbonInterval;
+use Awcodes\RicherEditor\Extensions\Video;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Checkbox;
@@ -14,7 +12,6 @@ use Filament\Forms\Components\RichEditor\EditorCommand;
 use Filament\Forms\Components\RichEditor\Plugins\Contracts\RichContentPlugin;
 use Filament\Forms\Components\RichEditor\RichEditorTool;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\TimePicker;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Enums\Width;
@@ -22,7 +19,7 @@ use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Icons\Heroicon;
 use Tiptap\Core\Extension;
 
-class EmbedPlugin implements RichContentPlugin
+class VideoPlugin implements RichContentPlugin
 {
     public static function make(): static
     {
@@ -35,7 +32,7 @@ class EmbedPlugin implements RichContentPlugin
     public function getTipTapPhpExtensions(): array
     {
         return [
-            app(Embed::class),
+            app(Video::class),
         ];
     }
 
@@ -47,7 +44,7 @@ class EmbedPlugin implements RichContentPlugin
     public function getTipTapJsExtensions(): array
     {
         return [
-            FilamentAsset::getScriptSrc('rich-content-plugins/embed', 'awcodes/richer-editor'),
+            FilamentAsset::getScriptSrc('rich-content-plugins/video', 'awcodes/richer-editor'),
         ];
     }
 
@@ -57,11 +54,11 @@ class EmbedPlugin implements RichContentPlugin
     public function getEditorTools(): array
     {
         return [
-            RichEditorTool::make('embed')
-                ->label(__('richer-editor::richer-editor.embed.label'))
+            RichEditorTool::make('video')
+                ->label(__('richer-editor::richer-editor.video.label'))
                 ->action()
-                ->icon(Heroicon::OutlinedTv)
-                ->iconAlias('richer-editor:toolbar.embed'),
+                ->icon(Heroicon::OutlinedFilm)
+                ->iconAlias('richer-editor:toolbar.video'),
         ];
     }
 
@@ -73,79 +70,43 @@ class EmbedPlugin implements RichContentPlugin
     public function getEditorActions(): array
     {
         return [
-            Action::make('embed')
+            Action::make('video')
                 ->modalWidth(Width::Large)
                 ->fillForm([
+                    'options' => [
+                        'controls',
+                    ],
                     'responsive' => true,
                     'width' => 16,
                     'height' => 9,
                 ])
                 ->schema([
                     TextInput::make('src')
-                        ->label(fn () => trans('richer-editor::richer-editor.embed.url'))
+                        ->label(fn () => trans('richer-editor::richer-editor.video.url'))
                         ->live()
                         ->required(),
                     CheckboxList::make('options')
                         ->hiddenLabel()
                         ->gridDirection('row')
                         ->columns(3)
-                        ->visible(fn (Get $get): mixed => $get('src'))
                         ->options(function (Get $get): array {
-                            if (str_contains((string) $get('src'), 'youtu')) {
-                                return [
-                                    'controls' => trans('richer-editor::richer-editor.embed.controls'),
-                                    'nocookie' => trans('richer-editor::richer-editor.embed.nocookie'),
-                                ];
-                            }
-
                             return [
-                                'autoplay' => trans('richer-editor::richer-editor.embed.autoplay'),
-                                'loop' => trans('richer-editor::richer-editor.embed.loop'),
-                                'title' => trans('richer-editor::richer-editor.embed.title'),
-                                'byline' => trans('richer-editor::richer-editor.embed.byline'),
-                                'portrait' => trans('richer-editor::richer-editor.embed.portrait'),
+                                'autoplay' => trans('richer-editor::richer-editor.video.autoplay'),
+                                'loop' => trans('richer-editor::richer-editor.video.loop'),
+                                'controls' => trans('richer-editor::richer-editor.video.controls'),
                             ];
                         })
                         ->dehydrateStateUsing(function (Get $get, $state): array {
-                            if (str_contains((string) $get('src'), 'youtu')) {
-                                return [
-                                    'controls' => in_array('controls', $state) ? 1 : 0,
-                                    'nocookie' => in_array('nocookie', $state) ? 1 : 0,
-                                ];
-                            }
-
                             return [
                                 'autoplay' => in_array('autoplay', $state) ? 1 : 0,
                                 'loop' => in_array('loop', $state) ? 1 : 0,
-                                'title' => in_array('title', $state) ? 1 : 0,
-                                'byline' => in_array('byline', $state) ? 1 : 0,
-                                'portrait' => in_array('portrait', $state) ? 1 : 0,
+                                'controls' => in_array('controls', $state) ? 1 : 0,
                             ];
-                        }),
-                    TimePicker::make('start_at')
-                        ->label(fn () => trans('richer-editor::richer-editor.embed.start_at'))
-                        ->live()
-                        ->date(false)
-                        ->visible(fn (Get $get): bool => str_contains((string) $get('src'), 'youtu'))
-                        ->afterStateHydrated(function (TimePicker $component, $state): void {
-                            if (! $state) {
-                                return;
-                            }
-
-                            $state = CarbonInterval::seconds($state)->cascade();
-                            $component->state(Carbon::parse($state->h . ':' . $state->i . ':' . $state->s)->format('Y-m-d H:i:s'));
-                        })
-                        ->dehydrateStateUsing(function ($state): int | float {
-                            if (! $state) {
-                                return 0;
-                            }
-
-                            return Carbon::parse($state)->diffInSeconds('00:00:00');
                         }),
                     Checkbox::make('responsive')
                         ->default(true)
                         ->live()
-                        ->label(fn () => trans('richer-editor::richer-editor.embed.responsive'))
+                        ->label(fn () => trans('richer-editor::richer-editor.video.responsive'))
                         ->afterStateUpdated(function (callable $set, $state): void {
                             if ($state) {
                                 $set('width', '16');
@@ -160,12 +121,12 @@ class EmbedPlugin implements RichContentPlugin
                         TextInput::make('width')
                             ->live()
                             ->required()
-                            ->label(fn () => trans('richer-editor::richer-editor.embed.width'))
+                            ->label(fn () => trans('richer-editor::richer-editor.video.width'))
                             ->default('16'),
                         TextInput::make('height')
                             ->live()
                             ->required()
-                            ->label(fn () => trans('richer-editor::richer-editor.embed.height'))
+                            ->label(fn () => trans('richer-editor::richer-editor.video.height'))
                             ->default('9'),
                     ])->columns(['md' => 2]),
                 ])
@@ -173,7 +134,7 @@ class EmbedPlugin implements RichContentPlugin
                     $component->runCommands(
                         [
                             EditorCommand::make(
-                                'setEmbed',
+                                'setVideo',
                                 arguments: [[
                                     ...$data,
                                 ]],

@@ -46,6 +46,11 @@ const defaultOptions = {
 const extensions = [
     'code-block-lowlight',
     'embed',
+    'id',
+    'video',
+    'fullscreen',
+    'link',
+    'figure',
 ]
 
 extensions.forEach((extension) => {
