@@ -87,8 +87,8 @@ class RicherEditorServiceProvider extends PackageServiceProvider
     {
         return [
             Js::make(
-                id: 'rich-content-plugins/code-block-lowlight',
-                path: __DIR__ . '/../resources/dist/code-block-lowlight.js'
+                id: 'rich-content-plugins/code-block-shiki',
+                path: __DIR__ . '/../resources/dist/code-block-shiki.js'
             )->loadedOnRequest(),
             Js::make(
                 id: 'rich-content-plugins/embed',
@@ -113,6 +113,10 @@ class RicherEditorServiceProvider extends PackageServiceProvider
             Js::make(
                 id: 'rich-content-plugins/figure',
                 path: __DIR__ . '/../resources/dist/figure.js'
+            )->loadedOnRequest(),
+            Js::make(
+                id: 'rich-content-plugins/emoji',
+                path: __DIR__ . '/../resources/dist/emoji.js'
             )->loadedOnRequest(),
         ];
     }

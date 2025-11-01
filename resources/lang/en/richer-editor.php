@@ -64,4 +64,9 @@ return [
     'source_code' => [
         'label' => 'Source Code',
     ],
+    'tools' => [
+        'h4' => 'Heading 4',
+        'h5' => 'Heading 5',
+        'h6' => 'Heading 6',
+    ],
 ];

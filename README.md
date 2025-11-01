@@ -5,8 +5,6 @@
 
 # A collection of extensions and tools to enhance the Filament Rich Editor field.
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
-
 ## Installation
 
 You can install the package via composer:
@@ -18,43 +16,92 @@ composer require awcodes/richer-editor
 > [!IMPORTANT]
 > If you have not set up a custom theme and are using Filament Panels follow the instructions in the [Filament Docs](https://filamentphp.com/docs/4.x/styling/overview#creating-a-custom-theme) first.
 
-After setting up a custom theme add the plugin's views to your theme css file or your app's css file if using the standalone packages.
+After setting up a custom theme add the plugin's css to your theme.css file or your app.css file if using the standalone packages.
 
 ```css
-@source '../../../../vendor/awcodes/richer-editor/resources/**/*.blade.php';
-```
-
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag="richer-editor-migrations"
-php artisan migrate
-```
-
-You can publish the config file with:
-
-```bash
-php artisan vendor:publish --tag="richer-editor-config"
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="richer-editor-views"
-```
-
-This is the contents of the published config file:
-
-```php
-return [
-];
+@import '../../../../vendor/awcodes/richer-editor/resources/css/index.css';
 ```
 
 ## Usage
 
+### Plugins
+
 ```php
-$richerEditor = new Awcodes\RicherEditor();
-echo $richerEditor->echoPhrase('Hello, Awcodes!');
+use Awcodes\RicherEditor\Plugins\DebugPlugin;
+use Awcodes\RicherEditor\Plugins\EmbedPlugin;
+use Awcodes\RicherEditor\Plugins\EmojiPlugin;
+use Awcodes\RicherEditor\Plugins\FullScreenPlugin;
+use Awcodes\RicherEditor\Plugins\IdPlugin;
+use Awcodes\RicherEditor\Plugins\LinkPlugin;
+use Awcodes\RicherEditor\Plugins\SourceCodePlugin;
+
+RichEditor::make('content')
+    ->plugins([
+        DebugPlugin::make(),
+        EmbedPlugin::make(),
+        EmojiPlugin::make(), // Doesn't have a toolbar button
+        FullScreenPlugin::make(),
+        IdPlugin::make(), // Doesn't have a toolbar button
+        LinkPlugin::make(), // Requires IdPlugin
+        SourceCodePlugin::make(),
+    ])
+    ->toolbarButtons([
+        ['embed', 'sourceCode', 'fullscreen', 'debug'],
+    ])
+```
+
+### Max Height
+
+```php
+use Filament\Forms\Components\RichEditor\RichEditorTool;
+
+RichEditor::make('content')
+    ->maxHeight('400px')
+```
+
+### Nested Tool Groups (Dropdowns)
+
+```php
+use Filament\Forms\Components\RichEditor\RichEditorTool;
+
+RichEditor::make('content')
+    ->tools([
+        RichEditorToolDropdown::make('headingTools')
+            ->label('Headings')
+            ->icon(Heroicon::H1)
+            ->displayAsLabel()
+            ->items([
+                'h1', 
+                'h2', 
+                'h3',
+                RichEditorTool::make('h4')...
+            ]),
+    ])
+    ->toolbarButtons([
+        ['headingTools'],
+    ])
+```
+
+### Prebuild Tools
+
+* Heading Four Tool
+* Heading Five Tool
+* Heading Six Tool
+
+```php
+use Awcodes\RicherEditor\Tools\HeadingFourTool;
+use Awcodes\RicherEditor\Tools\HeadingFiveTool;
+use Awcodes\RicherEditor\Tools\HeadingSixTool;
+
+RichEditor::make('content')
+    ->tools([
+        HeadingFourTool::make(),
+        HeadingFiveTool::make(),
+        HeadingSixTool::make(),
+    ])
+    ->toolbarButtons([
+        ['h4', 'h5', 'h6'],
+    ])
 ```
 
 ## Testing

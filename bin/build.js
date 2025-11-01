@@ -44,13 +44,15 @@ const defaultOptions = {
 }
 
 const extensions = [
-    'code-block-lowlight',
+    // 'code-block-lowlight',
     'embed',
     'id',
     'video',
     'fullscreen',
     'link',
     'figure',
+    'code-block-shiki',
+    'emoji',
 ]
 
 extensions.forEach((extension) => {

@@ -86,7 +86,6 @@ class LinkPlugin implements RichContentPlugin
                             TextInput::make('href')
                                 ->label(fn () => trans('richer-editor::richer-editor.link.href'))
                                 ->columnSpan('full')
-                                ->requiredWithout('id')
                                 ->validationAttribute('URL'),
                             TextInput::make('id')
                                 ->label(fn () => trans('richer-editor::richer-editor.link.id')),
